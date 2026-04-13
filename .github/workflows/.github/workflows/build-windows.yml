@@ -1,0 +1,19 @@
+name: Build Windows Executable
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - run: pip install pandas openpyxl numpy xlrd pyinstaller
+    - run: pyinstaller --name "PBCReportGenerator" --windowed --onefile --noconfirm --hidden-import pandas --hidden-import openpyxl --hidden-import numpy --hidden-import xlrd --collect-submodules openpyxl pbc_report_tool_v3.py
+    - uses: actions/upload-artifact@v4
+      with:
+        name: PBC-Report-Generator-Windows
+        path: dist/PBCReportGenerator.exe

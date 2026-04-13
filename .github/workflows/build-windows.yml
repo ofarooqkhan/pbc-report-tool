@@ -1,1 +1,35 @@
-/Users/omer/Documents/Claude/Projects/PBC Sales financial and ops analysis/.github/workflows/build-windows.yml
+name: Build Windows Executable
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas openpyxl numpy xlrd pyinstaller
+
+    - name: Build Windows exe
+      run: |
+        pyinstaller --name "PBC Report Generator" --windowed --onefile --noconfirm --clean --hidden-import pandas --hidden-import openpyxl --hidden-import numpy --hidden-import xlrd --collect-submodules openpyxl pbc_report_tool_v3.py
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: PBC-Report-Generator-Windows
+        path: dist/PBC Report Generator.exe
